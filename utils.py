@@ -62,6 +62,50 @@ def load_data(items, bands, bbox):
     )
     return data
 
+from odc.geo import GeoBox
+from odc.stac import load
+from pystac_client import Client
+
+catalog = "https://earth-search.aws.element84.com/v1/"
+client = Client.open(catalog)
+
+def load_s1_dem(collection, year, bbox): 
+    
+    items = client.search(
+        collections=[collection],
+        bbox=bbox,
+        datetime=year,
+    ).item_collection()
+
+    chunks = dict(x=2048, y=2048)
+    geom = GeoBox.from_bbox(bbox, crs="EPSG:4326", resolution=0.0001)
+
+    
+    if collection == "sentinel-1-grd":
+        measurements = ["vh", "vv"]
+        groupby = "solar_day"
+    elif collection == "cop-dem-glo-30":
+        measurements = None
+        groupby = None
+        chunks = None
+    else:
+        measurements = None
+        groupby = None
+
+    # Load data
+    data = load(
+        items,
+        chunks=chunks,
+        like=geom,
+        groupby=groupby,
+        measurements=measurements,
+    )
+    
+    data = data.rename({"latitude": "y", "longitude": "x"})
+
+    return data
+
+
 
 def calculate_band_indices(data):
     """
