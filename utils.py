@@ -73,22 +73,39 @@ def calculate_band_indices(data):
     Returns:
     xarray.Dataset: The dataset with added band indices.
     """
-
+# --- DEFINITION: Coefficients from your Table's WETNESS row (Nedkov 2017) --- https://www.researchgate.net/profile/R-Nedkov-2/publication/329184434_ORTHOGONAL_TRANSFORMATION_OF_SEGMENTED_IMAGES_FROM_THE_SATELLITE_SENTINEL-2/links/5bfbd74592851ced67d82a2a/ORTHOGONAL-TRANSFORMATION-OF-SEGMENTED-IMAGES-FROM-THE-SATELLITE-SENTINEL-2.pdf
+    C_B1 = 0.0649    # Coastal Aerosol
+    C_B2 = 0.1363    # Blue
+    C_B3 = 0.2802    # Green
+    C_B4 = 0.3072    # Red
+    C_B5 = 0.5288    # RedEdge 1
+    C_B6 = 0.1379    # RedEdge 2
+    C_B7 = -0.0001   # RedEdge 3
+    C_B8 = -0.0807   # NIR (Wide)
+    C_B9 = -0.0302   # Water Vapour
+    C_B10 = 0.0003   # SWIR - Cirrus
+    C_B11 = -0.4064  # SWIR1 (your 'swir16')
+    C_B12 = -0.5602  # SWIR2 (your 'swir22')
+    C_B8A = -0.1389  # NIR (Narrow)
+    
     data["mndwi"] = (data["green"] - data["swir16"]) / (data["green"] + data["swir16"])
     data["ndti"] = (data["red"] - data["green"]) / (data["red"] + data["green"])
     data["cai"] = (data["coastal"] - data["blue"]) / (data["coastal"] + data["blue"])
     data["ndvi"] = (data["nir"] - data["red"]) / (data["nir"] + data["red"])
-    # data["nir"] + 
     data["evi"] = (2.5 * data["nir"] - data["red"]) / (data["nir"] + (6 * data["red"]) - (7.5 * data["blue"]) + 1)
     data["savi"] = (data["nir"] - data["red"]) / (data["nir"] + data["red"])
     data["ndwi"] = (data["green"] - data["nir"]) / (data["green"] + data["nir"])
-    # data["b_g"] = data["blue"] / data["green"]
-    # data["b_r"] = data["blue"] / data["red"]
+    data["b_g"] = data["blue"] / data["green"]
+    data["b_r"] = data["blue"] / data["red"]
+    data["swir22_swir16"] = data["swir22"] / data["swir16"]
     data["mci"] = data["nir"] / data["rededge1"]
     data["ndci"] = (data["rededge1"] - data["red"]) / (data["rededge1"] + data["red"])
-    # data["ln_bg"] = np.log(data.blue / data.green)
     data["nbi"] = (data["swir16"] - data["nir"]) / (data["swir16"] + data["nir"])
-
+    data["ndmi"] = (data["nir"] - data["swir16"]) / (data["nir"] + data["swir16"])
+    data["bsi"] = ((data["swir22"] + data["red"]) - (data["nir"] + data["blue"])) / ((data["swir22"] + data["red"]) + (data["nir"] + data["blue"]))
+    data["awei"] = (data["blue"] + (2.5 * data["green"]) - (1.5 * (data["nir"] + data["swir16"]) - (0.25 * data["swir22"]))
+    data["tc_wetness"] = ((C_B1 * data["coastal"]) + (C_B2 * data["blue"]) + (C_B3 * data["green"]) + (C_B4 * data["red"]) + (C_B5 * data["rededge1"]) + (C_B6 * data["rededge2"]) + (C_B7 * data["rededge3"]) + (C_B8 * data["nir"]) + (C_B11 * data["swir16"]) + (C_B12 * data["swir22"]) + (C_B8A * data["nir08"]))
+    
     return data
 
 
