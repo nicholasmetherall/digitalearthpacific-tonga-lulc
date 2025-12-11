@@ -103,7 +103,7 @@ def calculate_band_indices(data):
     data["nbi"] = (data["swir16"] - data["nir"]) / (data["swir16"] + data["nir"])
     data["ndmi"] = (data["nir"] - data["swir16"]) / (data["nir"] + data["swir16"])
     data["bsi"] = ((data["swir22"] + data["red"]) - (data["nir"] + data["blue"])) / ((data["swir22"] + data["red"]) + (data["nir"] + data["blue"]))
-    data["awei"] = (data["blue"] + (2.5 * data["green"]) - (1.5 * (data["nir"] + data["swir16"]) - (0.25 * data["swir22"]))
+    data["awei"] = (data["blue"] + (2.5 * data["green"]) - (1.5 * (data["nir"] + data["swir16"]) - (0.25 * data["swir22"])))
     data["tc_wetness"] = ((C_B1 * data["coastal"]) + (C_B2 * data["blue"]) + (C_B3 * data["green"]) + (C_B4 * data["red"]) + (C_B5 * data["rededge1"]) + (C_B6 * data["rededge2"]) + (C_B7 * data["rededge3"]) + (C_B8 * data["nir"]) + (C_B11 * data["swir16"]) + (C_B12 * data["swir22"]) + (C_B8A * data["nir08"]))
     
     return data
