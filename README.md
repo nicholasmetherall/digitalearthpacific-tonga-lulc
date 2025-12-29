@@ -1,3 +1,3 @@
 # digitalearthpacific-tonga-lulc
 
-![Tonga LULC Map](output/tonga_lulc_map.png)
+![Banner](foss4g-workflows.png)
